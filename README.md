@@ -1,94 +1,41 @@
-Table of Contents
-=================
-
-  * [Where Did All The Previous Code Go?](#where-did-all-the-previous-code-go)
-  * [What You Get From This control\-repo](#what-you-get-from-this-control-repo)
-    * [Copy This Repo Into Your Own Git Server](#copy-this-repo-into-your-own-git-server)
-      * [GitLab](#gitlab)
-      * [Stash](#stash)
-      * [GitHub](#github)
-
-Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc.go)
-
-# Where Did All The Previous Code Go?
-
-Initially, the control-repo project began as a 'starter' template for anyone who wanted to get started with r10k. As time passed, and Code Manager was integrated into Puppet Enterprise, the scope of this project grew to include opinionated Puppet profiles to set up many Puppet Enterprise components. As the code increased, so did the complexity of the control-repo project. To reduce that complexity, as well as continuing to meet the needs of individuals who would like a more minimal template, this repository was stripped of anything other than the bare minimum files necessary to get started with a functioning
-control-repo.
-
-All of the code that was previously in this repository still exists in separate repositories under the [Puppet Ramp Up Program namespace within Github](https://github.com/Puppet-RampUpProgram) and can be re-connected to an existing control-repo if that is required by adding the modules to the Puppetfile. Alternatively, if that previously opinionated control-repo is desired, [it still exists on Github under the Puppet Ramp Up Program namespace.](https://github.com/Puppet-RampUpProgram/control-repo) This control-repo project will remain a template for anyone who would like a minimal 'starter' template.
-
-# What You Get From This control-repo
+# R10K Control Repo
 
 This repository is a template control-repo that can be used with r10k or Puppet Enterprise Code Manager.
 
 The major points are:
- - An environment.conf that correctly implements:
-   - A site directory for roles, profiles, and any custom modules for your organization.
-   - A config_version script.
- - Provided config_version scripts to output the commit of code that your agent just applied.
- - Basic example of roles/profiles code.
- - Example hieradata directory with pre-created common.yaml and nodes directory.
-   - These match the default hierarchy that ships with PE.
 
-## Copy This Repo Into Your Own Git Server
+    An environment.conf that correctly implements:
+        A site directory for roles, profiles, and any custom modules for your organization.
+        A config_version script.
+    Provided config_version scripts to output the commit of code that your agent just applied.
+    Basic example of roles/profiles code.
+    Example hieradata directory with pre-created common.yaml and nodes directory.
+        These match the default hierarchy that ships with PE.
 
-### GitLab
+Read [complete README](https://github.com/puppetlabs/control-repo/README.md) on the original this is forked from.
 
-1. Install GitLab.
- - https://about.gitlab.com/downloads/
+# My Notes
 
-2. After GitLab is installed you may sign if with the `root` user and password `5iveL!fe`.
+This project isn't cloned into your puppet server. Rather you just need to create a new folder and file on a system already running Puppet Server.
 
-3. Make a user for yourself.
+On my setup I created the folder `/etc/puppetlabs/r10k` and in that folder I have `r10k.yaml`:
 
-4. Make an SSH key to link with your user. You’ll want to do this on the machine you intend to edit code from (most likely not your Puppet master, but your local workstation or laptop).
- - http://doc.gitlab.com/ce/ssh/README.html
- - https://help.github.com/articles/generating-ssh-keys/
+    :sources:
+      :kirkins:
+        remote: 'git@github.com:kirkins/control-repo.git'
+        basedir: '/etc/puppetlabs/code/environments'
+        private_key: '/root/.ssh/id_rsa'
 
-5. Create a group called `puppet` (this is case sensitive).
- - http://doc.gitlab.com/ce/workflow/groups.html
+Once this file is in place first ensure you an ssh key from your puppet server registered with your git service. Even public repos like this one require authentication via private key. Once you've ensure this you can run `r10k deploy environment`.
 
-6. Add your user to the `puppet` group as well.
+If it has a problem recognizing the key run your equivilent to the following manually and accept yes when asked if you trust the connection.
 
-7. Create a project called `control-repo`, and set the Namespace to be the `puppet` group.
+    git clone --mirror git@github.com:kirkins/control-repo.git /var/cache/r10k/git@github.com-kirkins-control-repo.git
 
-8. Clone this control repository to your laptop/workstation:
- - `git clone <repository url>`
- - `cd control-repo`
+After that you should have no problem running `r10k deploy enviornment`.
 
-9. Remove this repository as the origin remote:
- - `git remote remove origin`
+When this command is run the `/etc/puppetlabs/code/enviornment` folder is populated. Each branch on the control repo becomes a folder and corisponds with a single configuration state.
 
-10. Add your internal repository as the origin remote:
- - `git remote add origin <url of your gitlab repository>`
+It will then be up to your ENC (external node classifier) to determine which nodes get which configurations applied to them.
 
-11. Push the production branch of the repository from your machine up to your git server
- - `git push origin production`
-
-### Stash
-
-Coming soon!
-
-### GitHub
-
-1. Prepare your local git client to authenticate with GitHub.com or a local GitHub Enterprise instance.
-  - https://help.github.com/articles/generating-ssh-keys/
-  - https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/
-
-2. Create a repository called `control-repo` in your user account or organization.  Ensure that "Initialize this repository with a README" is not selected.
-  - https://help.github.com/articles/creating-a-new-repository/
-
-3. Make a note of your repository URL (HTTPS or SSH, depending on your security configuration).
-
-4. Clone this control repository to your laptop/workstation:
-  - `git clone <repository url>`
-  - `cd control-repo`
-
-5. Remove this repository as the origin remote:
-  - `git remote remove origin`
-
-6. Add your internal repository as the origin remote:
-  - `git remote add origin <url of your github repository>`
-
-7. Push the production branch of the repository from your machine up to your git server
-  - `git push origin production`
+I've also created a [control-repo-globas repo](https://github.com/kirkins/control-repo-globals) to go along with this. It can be used to contain modules, files, and configurations you want to be present across all your control-repo branches.
