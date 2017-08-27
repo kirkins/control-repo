@@ -4,6 +4,8 @@ exec { 'apt-get update':
 
 $packages = [ 
   'unattended-upgrades',
+  'git',
+  'node',
 ]
 
 package { 
