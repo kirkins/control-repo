@@ -11,7 +11,3 @@ $packages = [
 package { 
   $packages: ensure => installed,
 }
-
-exec { 'apt-get clean':
-  command => "/usr/bin/apt-get clean"
-}
