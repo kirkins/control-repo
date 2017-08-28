@@ -6,6 +6,7 @@ $packages = [
   'unattended-upgrades',
   'git',
   'node',
+  'fortune',
 ]
 
 package { 
