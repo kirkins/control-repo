@@ -6,7 +6,7 @@ vcsrepo { '/home/pi/pop_machine':
 }
 
 exec { 'npm start':
-  command => "/usr/bin/npm stop & /usr/bin/npm start",
+  command => "killall electron & /usr/bin/npm start",
   cwd     => "/home/pi/pop_machine/",
 }
 
